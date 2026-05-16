@@ -3,229 +3,441 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIVA_OS // ENDOKRİN AKIŞ MİMARİSİ</title>
+    <title>DIVA_OS // THE ABSOLUTE MATRIX</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #02040a; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .glass { background: rgba(10, 15, 30, 0.7); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.04); }
+        .neon-glow-emerald { box-shadow: 0 0 20px rgba(16, 185, 129, 0.15); }
+        .neon-glow-pink { box-shadow: 0 0 20px rgba(236, 72, 153, 0.15); }
+        
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+        .float-anim { animation: float 4s infinite ease-in-out; }
+
+        .matrix-grid {
+            background-image: linear-gradient(rgba(16, 185, 129, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(16, 185, 129, 0.015) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        
+        @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+        .scanline::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, transparent, rgba(16,185,129,0.05), transparent); animation: scanline 6s linear infinite; pointer-events: none; }
     </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-slate-100 font-mono flex flex-col items-center justify-between p-4 md:p-8 select-none">
+<body class="min-h-screen text-slate-100 matrix-grid flex flex-col items-center p-4 md:p-8 overflow-x-hidden scanline relative">
 
-    <!-- Üst Header -->
-    <header class="w-full max-w-6xl flex justify-between items-center border-b border-slate-800 pb-4 mb-6">
-        <div class="flex items-center gap-3">
-            <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-            <h1 class="text-sm md:text-lg font-bold tracking-widest text-slate-200">DIVA_OS // ENDOKRİN AKIŞ MİMARİSİ</h1>
+    <div class="fixed top-[-20%] left-[-10%] w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="fixed bottom-[-25%] right-[-10%] w-[600px] h-[600px] bg-pink-500/5 rounded-full blur-[140px] pointer-events-none"></div>
+
+    <header class="w-full max-w-6xl flex justify-between items-center mb-8 relative z-10 border-b border-white/5 pb-4">
+        <div class="flex flex-col">
+            <div class="flex items-center gap-2.5">
+                <div class="w-2 h-2 bg-emerald-400 rounded-full animate-ping absolute"></div>
+                <div class="w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_10px_#10b981]"></div>
+                <h1 class="text-xs md:text-sm font-black tracking-[0.3em] uppercase text-emerald-400 mono">Diva OS v3.5 // Engine Active</h1>
+            </div>
+            <span class="text-[9px] text-slate-500 mt-1 tracking-widest mono uppercase">Endocrine Feedback Simulator</span>
         </div>
-        <div class="text-xs text-slate-500 hidden sm:block">SYS_VER: 1.0.0_PCOS</div>
+        <div class="flex items-center gap-4">
+            <div class="text-[10px] bg-emerald-500/5 border border-emerald-500/20 px-3 py-1 rounded-full mono text-emerald-400">
+                SECURE_CONNECTION
+            </div>
+        </div>
     </header>
 
-    <!-- Ana Panel Kontrol Odası -->
-    <main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-6 items-start flex-grow">
+    <main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative z-10">
         
-        <!-- SOL KONSOL: 10 Protokol Kartları -->
-        <section class="lg:col-span-7 bg-slate-900/40 border border-slate-800 rounded-2xl p-5 backdrop-blur-md space-y-3">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-4">
-                <h2 class="text-xs font-bold text-slate-400 tracking-wider">AKTİF BİYOLOJİK PROTOKOLLER</h2>
-                <button onclick="resetAll()" class="text-[10px] text-slate-500 hover:text-red-400 transition-colors border border-slate-800 px-2 py-0.5 rounded">
-                    TEMİZLE
-                </button>
+        <section class="lg:col-span-7 space-y-4">
+            <div class="flex justify-between items-end px-2">
+                <h2 class="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase mono">Biyolojik Protokol Matrisi</h2>
+                <button onclick="resetSystem()" class="text-[9px] text-slate-600 hover:text-red-400 transition-colors mono border border-white/5 px-2 py-0.5 rounded-md hover:bg-white/5">[SIFIRLA]</button>
             </div>
-
-            <div id="protocol-list" class="space-y-2.5 max-h-[65vh] overflow-y-auto pr-1">
-                <!-- JavaScript dinamik olarak dolduracak -->
-            </div>
+            
+            <div id="protocol-list" class="space-y-3 max-h-[72vh] overflow-y-auto pr-1">
+                </div>
         </section>
 
-        <!-- SAĞ KONSOL: Endokrin Akış Görseli & Telemetri -->
-        <section class="lg:col-span-5 space-y-6">
+        <section class="lg:col-span-5 space-y-6 lg:sticky lg:top-8">
             
-            <!-- HPO Aksı Şeması -->
-            <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-5 backdrop-blur-md relative overflow-hidden">
-                <h2 class="text-xs font-bold text-slate-400 tracking-wider border-b border-slate-800 pb-2 mb-6">HPO SİNYAL AKIŞ ŞEMASI</h2>
-                
-                <div class="flex flex-col items-center justify-between min-h-[240px] relative z-10">
-                    <!-- Hipofiz -->
-                    <div id="node-pituitary" class="p-3 rounded-xl border text-center w-48 transition-all duration-500 bg-slate-950 border-slate-800">
-                        <div class="text-[10px] opacity-60">SİNYAL MERKEZİ</div>
-                        <div class="text-xs font-bold tracking-wide">HİPOFİZ AXIS</div>
-                        <div id="text-lh" class="text-[9px] mt-1 font-sans opacity-80">LH Frekansı: Kritik/Yüksek</div>
+            <div class="glass rounded-[32px] p-6 border border-white/5 shadow-2xl relative overflow-hidden">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <span class="text-[10px] text-slate-400 uppercase font-bold tracking-widest mono">Stabilizasyon Seviyesi</span>
+                        <div id="score-text" class="text-5xl font-black text-white mt-1 mono tracking-tighter">0%</div>
                     </div>
-
-                    <!-- Sinyal Akış Hattı -->
-                    <div class="absolute top-[52px] bottom-[52px] w-0.5 flex flex-col justify-between items-center">
-                        <div id="signal-line" class="w-0.5 h-full transition-all duration-700 bg-red-500 animate-pulse"></div>
-                        <div id="signal-dot" class="w-2 h-2 rounded-full absolute transition-all duration-500 bg-red-400 animate-bounce" style="top: 40%"></div>
-                    </div>
-
-                    <!-- Yumurtalık -->
-                    <div id="node-ovary" class="p-3 rounded-xl border text-center w-48 transition-all duration-500 bg-slate-950 border-slate-800">
-                        <div class="text-[10px] opacity-60">HEDEF ORGAN</div>
-                        <div class="text-xs font-bold tracking-wide">YUMURTALIK (OVER)</div>
-                        <div id="text-follicle" class="text-[9px] mt-1 font-sans opacity-80">Folikül Durumu: Gelişimi Yarım</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Telemetri Verileri & Skor Ölçer -->
-            <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-5 backdrop-blur-md space-y-5">
-                <div>
-                    <div class="flex justify-between items-end mb-1.5">
-                        <span class="text-xs font-bold text-slate-400 tracking-wider">HORMONAL STABİLİZASYON SKORU</span>
-                        <span id="score-text" class="text-lg font-bold tracking-tight text-red-400">%0</span>
-                    </div>
-                    <div class="w-full h-2 bg-slate-950 rounded-full border border-slate-800 overflow-hidden p-0.5">
-                        <div id="score-bar" class="h-full rounded-full transition-all duration-500 bg-red-500" style="width: 0%"></div>
-                    </div>
+                    <div id="rank-badge" class="px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-xl text-[10px] font-bold text-red-400 uppercase mono">Kritik Faz</div>
                 </div>
 
-                <!-- Terminal Durum Çıktısı -->
-                <div class="bg-slate-950 rounded-xl p-3.5 border border-slate-800 space-y-1">
-                    <div class="text-[9px] text-slate-500">ANLIK TELEMETRİ ÇIKTISI:</div>
-                    <div id="status-title" class="text-xs font-bold tracking-wide text-red-400">KRİTİK DEŞARJ (ANDROJEN DOMİNANSI)</div>
-                    <p id="status-desc" class="text-xs text-slate-400 font-sans leading-relaxed pt-1 border-t border-slate-900">
-                        Yüksek LH pulsite frekansı ve matürasyon blokajı aktif.
+                <div class="w-full h-2 bg-black/40 rounded-full border border-white/5 overflow-hidden p-0.5">
+                    <div id="score-bar" class="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-red-500 via-amber-500 to-emerald-500" style="width: 0%"></div>
+                </div>
+
+                <div id="status-box" class="mt-5 p-4 rounded-2xl bg-black/30 border border-white/5 transition-all duration-300">
+                    <p id="status-desc" class="text-xs text-slate-400 leading-relaxed font-medium">
+                        Sistem aktif. HPO aksındaki anomaliyi düzeltmek için sol konsoldaki biyolojik görevleri tamamlayın.
                     </p>
                 </div>
             </div>
 
+            <div class="glass rounded-[32px] p-6 flex flex-col items-center justify-between min-h-[340px] border border-white/5 relative">
+                <div class="w-full flex justify-between text-[9px] font-bold text-slate-500 uppercase mono mb-2">
+                    <span>Sinyal Kaynağı (Hipofiz)</span>
+                    <span>Hedef Organ (Over)</span>
+                </div>
+
+                <div class="relative flex flex-col items-center justify-between h-[240px] w-full mt-2">
+                    <div id="node-brain" class="relative z-10 w-44 p-3 rounded-2xl bg-[#090d16] border border-white/5 text-center shadow-xl transition-all duration-500">
+                        <div class="text-[10px] font-extrabold tracking-wider text-slate-300">HİPOFİZ BEZİ</div>
+                        <div id="text-lh" class="text-[9px] mt-0.5 text-red-400 font-bold mono">LH: PULSİTE AGRESİF</div>
+                    </div>
+
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div id="flow-line" class="w-[2px] h-[150px] bg-gradient-to-b from-red-500 to-pink-500 relative transition-all duration-500">
+                            <div id="flow-particle" class="w-2 h-2 rounded-full bg-red-400 absolute left-[-3px] blur-[1px] shadow-[0_0_8px_#ef4444]" style="top: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div id="node-ovary" class="relative z-10 w-44 p-3 rounded-2xl bg-[#090d16] border border-white/5 text-center shadow-xl transition-all duration-500 float-anim">
+                        <div class="text-[10px] font-extrabold tracking-wider text-slate-300">YUMURTALIK (OVER)</div>
+                        <div id="text-follicle" class="text-[9px] mt-0.5 text-slate-500 mono">MATÜRASYON BLOKE</div>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 
-    <!-- Yasal Sorumluluk Reddi -->
-    <footer class="w-full max-w-6xl text-center border-t border-slate-900 pt-4 mt-6">
-        <p class="text-[10px] text-slate-500 font-sans max-w-3xl mx-auto leading-relaxed">
-            Bu içerik/araç tamamen scientific literacy ve bilgilendirme amaçlıdır; kişisel tanı, teşhis ve tedavi protokolü içermez. Sağlık durumunuz ve tedavi süreçleriniz için her zaman hekiminize danışın.
+    <div id="game-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 hidden">
+        <div class="max-w-md w-full glass rounded-[40px] p-6 md:p-8 border border-white/10 modal-enter text-center shadow-[0_0_50px_rgba(0,0,0,0.8)] relative">
+            <button onclick="closeModal()" class="absolute top-4 right-6 text-slate-500 hover:text-white mono text-xs">[KAPAT]</button>
+            
+            <div id="game-icon" class="w-16 h-16 bg-white/5 rounded-2xl mx-auto mb-4 flex items-center justify-center border border-white/10 text-2xl">
+                🎮
+            </div>
+            <h3 id="game-title" class="text-lg font-black text-white mb-1 uppercase mono tracking-tight">Protokol Görevi</h3>
+            <p id="game-instructions" class="text-xs text-slate-400 mb-6 font-medium px-4">
+                Görev talimatları buraya gelecek.
+            </p>
+            
+            <div id="game-canvas" class="w-full min-h-[180px] bg-black/50 rounded-3xl mb-6 border border-white/5 flex items-center justify-center p-4 relative overflow-hidden">
+                </div>
+
+            <button id="game-action-btn" class="w-full py-4 bg-white/10 text-white font-bold rounded-2xl transition-all uppercase tracking-widest text-xs border border-white/10 hover:bg-white/20">
+                Sinyali Onayla
+            </button>
+        </div>
+    </div>
+
+    <div id="share-card" class="fixed inset-0 z-[110] bg-[#020308]/95 backdrop-blur-2xl flex items-center justify-center p-4 hidden">
+        <div class="max-w-sm w-full bg-gradient-to-b from-[#0b1320] to-[#040712] p-8 rounded-[40px] text-center border border-emerald-500/30 shadow-[0_0_60px_rgba(16,185,129,0.1)] relative overflow-hidden">
+            <div class="absolute top-[-20%] left-[-20%] w-[200px] h-[200px] bg-emerald-500/10 rounded-full blur-[50px]"></div>
+            
+            <div class="w-16 h-16 rounded-full border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-center mx-auto mb-4 text-emerald-400 font-black text-xl shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                ✓
+            </div>
+            <h1 class="text-emerald-400 text-2xl font-black mb-2 mono tracking-wider uppercase italic">MATRİS DEŞİFRE EDİLDİ</h1>
+            <p class="text-slate-400 text-xs font-medium mb-6 uppercase tracking-widest">Hormonal Homeostaz Dengesi %100 Başarıyla Kuruldu</p>
+            
+            <div class="bg-black/40 rounded-2xl p-4 border border-white/5 text-left space-y-2 mb-6">
+                <div class="text-[10px] text-slate-500 mono font-bold">// INSTAGRAM STORY BLUEPRINT:</div>
+                <p class="text-xs text-slate-200 leading-relaxed font-sans" id="blueprint-text">
+                    "Diva OS v3.5 // 10 kritik endokrin protokolünün tamamını tamamlayarak hormonal akış şemamı %100 stabilize ettim! 🛡️ Kendi vücut matrisini hacklemek isteyen divalar buraya: @bengisuege"
+                </p>
+            </div>
+
+            <button onclick="copyAndCloseShare()" class="w-full py-3.5 bg-emerald-500 text-black font-black rounded-xl text-xs tracking-widest uppercase hover:scale-[1.01] transition-all">
+                Metni Kopyala & Paneli Kapat
+            </button>
+        </div>
+    </div>
+
+    <footer class="w-full max-w-6xl text-center border-t border-white/5 pt-4 mt-8">
+        <p class="text-[10px] text-slate-500 max-w-3xl mx-auto leading-relaxed">
+            Bu dijital simülasyon aracı tamamen scientific literacy ve bilgilendirme amaçlıdır; kesinlikle kişisel tanı, teşhis, tahlil yorumlama veya herhangi bir tıbbi tedavi protokolü içermez. Sağlık durumunuz ve tedavi süreçleriniz için her zaman hekiminize danışın.
         </p>
     </footer>
 
     <script>
         const PROTOCOLS = [
-            { id: 1, name: "PROTOKOL_01: TEŞHİS & BİO-MARKER", desc: "HOMA-IR, Serbest Testosteron, DHEA-S ve SHBG takibi.", phase: "Tahlil" },
-            { id: 2, name: "PROTOKOL_02: GLUKOZ DİZİLİMİ", desc: "Önce lif, sonra protein ve yağ, en son karbonhidrat dizilimi.", phase: "Beslenme" },
-            { id: 3, name: "PROTOKOL_03: HÜCRESEL SİNYAL (İNOSİTOL)", desc: "40:1 oranında Myo/D-Chiro İnositol ile reseptör hassasiyeti.", phase: "Takviye" },
-            { id: 4, name: "PROTOKOL_04: ENFLAMASYON BASKILAMA", desc: "NAC (N-Asetilsistein) ile hücresel stres ve antioksidan aktivite.", phase: "Takviye" },
-            { id: 5, name: "PROTOKOL_05: ANDROJEN KLİRENSİ", desc: "Çinko ile DHT dönüşüm blokajı, Magnezyum ile kortizol dengesi.", phase: "Takviye" },
-            { id: 6, name: "PROTOKOL_06: PROTEİN ÖNCÜLLÜ BAŞLANGIÇ", desc: "İlk öğünde minimum 30 gram kaliteli protein matrisi.", phase: "Beslenme" },
-            { id: 7, name: "PROTOKOL_07: METABOLİK ŞALTER (D3/K2)", desc: "Hedef >50 ng/mL kan düzeyi için sinerjik D3 + K2 takviyesi.", phase: "Takviye" },
-            { id: 8, name: "PROTOKOL_08: KORTİZOL MODÜLASYONU", desc: "Sabah aç karnına kahve tüketiminin sonlandırılması (Post-1 Saat).", phase: "Rutin" },
-            { id: 9, name: "PROTOKOL_09: LİPİT STABİLİZASYONU", desc: "Karaciğer koruması ve SHBG artışı için yüksek EPA/DHA Omega-3.", phase: "Takviye" },
-            { id: 10, name: "PROTOKOL_10: SÜRDÜRÜLEBİLİR REÇETE", desc: "10 dk post-prandiyal yürüyüş, direnç egzersizi ve 7 saat karanlık uyku.", phase: "Rutin" }
+            { id: 1, name: "Teşhis ve Biyomarker", desc: "HOMA-IR ve Androjen haritasını doğru klinik değerlerle eşleştir.", phase: "Tahlil", icon: "🔍", game: "Marker Eşleştirme" },
+            { id: 2, name: "Glukoz Besin Dizilimi", desc: "Besin gruplarını doğru fizyolojik sıraya koyarak insülin pikini baskıla.", phase: "Beslenme", icon: "🥗", game: "Tabak Sıralama" },
+            { id: 3, name: "Hücreselleşme (İnositol)", desc: "40:1 oranını yakalayarak hücre kapısındaki insülin reseptör kilidini aç.", phase: "Takviye", icon: "🔑", game: "Reseptör Kilidi" },
+            { id: 4, name: "NAC Anti-Enflamasyon", desc: "Hücresel oksidatif stresi ve serbest radikalleri patlatarak temizle.", phase: "Takviye", icon: "🛡️", game: "Oksidatif Popper" },
+            { id: 5, name: "Androjen Klirens Modülü", desc: "5-alfa redüktaz enzimini bloke ederek DHT dönüşüm hattını kes.", phase: "Takviye", icon: "⚔️", game: "Enzim Blokajı" },
+            { id: 6, name: "30g Kaliteli Protein Gücü", desc: "Günün ilk öğününde glukagon dengesini kurmak için proteini yükle.", phase: "Beslenme", icon: "⚡", game: "Protein Matrisi" },
+            { id: 7, name: "Metabolik Şalter (D3+K2)", desc: "Reseptör duyarlılığı için kalsiyum şalterini doğru faza şarj et.", phase: "Takviye", icon: "💡", game: "Şalter Şarjı" },
+            { id: 8, name: "Kortizol Zamanlama Kilidi", desc: "Sabah açlık kortizolünü kahveyle patlatma, zamanı doğru ayarla.", phase: "Rutin", icon: "☕", game: "Kronometre" },
+            { id: 9, name: "Lipid ve SHBG Koruma", desc: "Karaciğer koruması ve serbest testosteron bağlanması için Omega-3'ü bağla.", phase: "Takviye", icon: "🐟", game: "Lipid Bağlama" },
+            { id: 10, name: "Sirkadiyen Ritim Ayarı", desc: "Melatonin ve sirkadiyen saati gün ışığı döngüsüne senkronize et.", phase: "Rutin", icon: "🌙", game: "Döngü Senkronu" }
         ];
 
-        let activeProtocols = [];
+        let activeProtocols = JSON.parse(localStorage.getItem('diva_matrix_save_data')) || [];
+        let pParticleInterval = null;
 
         function renderProtocols() {
             const container = document.getElementById('protocol-list');
-            container.innerHTML = PROTOCOLS.map(proto => {
-                const isActive = activeProtocols.includes(proto.id);
+            container.innerHTML = PROTOCOLS.map(p => {
+                const isDone = activeProtocols.includes(p.id);
                 return `
-                    <div onclick="toggleProtocol(${proto.id})" class="w-full text-left p-3.5 rounded-xl border transition-all duration-300 cursor-pointer flex justify-between items-start gap-4 select-none ${
-                        isActive ? 'bg-emerald-950/20 border-emerald-500/50 shadow-[inset_0_0_12px_rgba(16,185,129,0.05)]' : 'bg-slate-900/60 border-slate-800/80 hover:border-slate-700'
-                    }">
-                        <div class="space-y-1">
-                            <div class="flex items-center gap-2">
-                                <span class="text-[9px] px-1.5 py-0.5 rounded border uppercase font-sans tracking-wide ${
-                                    isActive ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-800 text-slate-400 border-slate-700'
-                                }">${proto.phase}</span>
-                                <h3 class="text-xs font-bold tracking-wide transition-colors ${isActive ? 'text-emerald-400' : 'text-slate-300'}">${proto.name}</h3>
+                    <div onclick="openGame(${p.id})" class="group flex items-center justify-between p-4 rounded-2xl transition-all duration-300 cursor-pointer border ${isDone ? 'bg-emerald-500/5 border-emerald-500/30 neon-glow-emerald' : 'bg-[#0a0f1d]/60 border-white/5 hover:border-white/10'}">
+                        <div class="flex items-center gap-4">
+                            <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg transition-all ${isDone ? 'bg-emerald-500 text-black font-bold' : 'bg-white/5 text-slate-400'}" id="icon-box-${p.id}">
+                                ${isDone ? '✓' : p.icon}
                             </div>
-                            <p class="text-xs text-slate-400 font-sans leading-relaxed">${proto.desc}</p>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[8px] font-extrabold px-1.5 py-0.5 rounded bg-white/5 text-slate-400 uppercase mono border border-white/5">${p.phase}</span>
+                                    <h3 class="text-xs font-bold tracking-wide ${isDone ? 'text-emerald-400' : 'text-slate-200'}">${p.name}</h3>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-0.5 font-normal leading-relaxed">${isDone ? 'Biyolojik entegrasyon başarılı.' : p.desc}</p>
+                            </div>
                         </div>
-                        <div class="w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
-                            isActive ? 'border-emerald-500 bg-emerald-500 text-slate-900' : 'border-slate-700 bg-slate-950'
-                        }">
-                            ${isActive ? '<svg class="w-3.5 h-3.5 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>' : ''}
+                        <div class="text-[9px] font-bold mono tracking-wider ${isDone ? 'text-emerald-500' : 'text-slate-600 group-hover:text-slate-400'}">
+                            ${isDone ? '[SİNYAL_OK]' : '[GÖREVE_BAŞLA]'}
                         </div>
                     </div>
                 `;
             }).join('');
+            localStorage.setItem('diva_matrix_save_data', JSON.stringify(activeProtocols));
             updateTelemetry();
         }
 
-        function toggleProtocol(id) {
-            if (activeProtocols.includes(id)) {
-                activeProtocols = activeProtocols.filter(pId => pId !== id);
-            } else {
-                activeProtocols.push(id);
+        function openGame(id) {
+            if (activeProtocols.includes(id)) return;
+            const p = PROTOCOLS.find(x => x.id === id);
+            const canvas = document.getElementById('game-canvas');
+            const btn = document.getElementById('game-action-btn');
+            
+            document.getElementById('game-title').innerText = `GÖREV: ${p.game}`;
+            document.getElementById('game-modal').classList.remove('hidden');
+            
+            // Tüm buton durumunu resetle
+            btn.className = "w-full py-4 bg-white/5 text-slate-500 font-bold rounded-2xl transition-all uppercase tracking-widest text-xs border border-white/5 cursor-not-allowed";
+            btn.innerText = "Görevi Çözün";
+            btn.onclick = null;
+
+            // GERÇEK MİNİ OYUN MOTORLARI ENJEKSİYONU
+            if (id === 1) { // Teşhis - Eşleştirme Oyunu
+                document.getElementById('game-instructions').innerText = "Tıbbi parametreyi doğru klinik hedef değerle eşleştirerek teşhisi doğrula.";
+                canvas.innerHTML = `
+                    <div class="grid grid-cols-2 gap-3 w-full max-w-xs text-center mono text-[10px]">
+                        <button id="game1-btn1" onclick="playGame1('marker')" class="p-2 bg-white/5 border border-white/10 rounded-xl text-slate-300">HOMA-IR</button>
+                        <button id="game1-btn2" onclick="playGame1('target')" class="p-2 bg-white/5 border border-white/10 rounded-xl text-slate-300">> 2.5 İnsülin Direnci</button>
+                    </div>
+                `;
+            } 
+            else if (id === 2) { // Glukoz Dizilimi Oyunu
+                document.getElementById('game-instructions').innerText = "Besinleri fizyolojik sindirim sırasına (Lif -> Protein -> Karbonhidrat) göre sırala.";
+                window.game2Sequence = [];
+                canvas.innerHTML = `
+                    <div class="flex flex-col gap-3 w-full max-w-xs text-[10px] font-bold">
+                        <div class="flex justify-between gap-2">
+                            <button id="g2-l" onclick="playGame2('lif')" class="flex-1 p-2.5 bg-white/5 border border-white/10 rounded-xl">LİF (Brokoli)</button>
+                            <button id="g2-p" onclick="playGame2('pro')" class="flex-1 p-2.5 bg-white/5 border border-white/10 rounded-xl">PROTEİN (Somon)</button>
+                            <button id="g2-k" onclick="playGame2('kar')" class="flex-1 p-2.5 bg-white/5 border border-white/10 rounded-xl">KARBONHİDRAT (Pilav)</button>
+                        </div>
+                        <div id="g2-status" class="text-center text-slate-500 text-[9px] uppercase mono mt-2">Seçim Sırası Bekleniyor...</div>
+                    </div>
+                `;
+            } 
+            else if (id === 3) { // İnositol - Zamanlama/Refleks Oyunu
+                document.getElementById('game-instructions').innerText = "Hücre kapısı yeşil bölgeye geldiğinde tam zamanında 'BAĞLAN' butonuna bas.";
+                canvas.innerHTML = `
+                    <div class="flex flex-col items-center gap-4 w-full">
+                        <div class="w-full h-4 bg-slate-900 rounded-full border border-white/5 relative overflow-hidden">
+                            <div class="absolute top-0 bottom-0 left-[40%] right-[40%] bg-emerald-500/40 border-x border-emerald-400"></div>
+                            <div id="g3-bar" class="absolute top-0 bottom-0 left-0 w-2 bg-white shadow-[0_0_8px_#fff] transition-all duration-75" style="left: 0%"></div>
+                        </div>
+                        <button onclick="playGame3()" class="px-4 py-1.5 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold tracking-wider mono uppercase text-slate-300">BAĞLAN</button>
+                    </div>
+                `;
+                window.g3Direction = 1;
+                window.g3Pos = 0;
+                window.g3Interval = setInterval(() => {
+                    window.g3Pos += (5 * window.g3Direction);
+                    if(window.g3Pos >= 95 || window.g3Pos <= 0) window.g3Direction *= -1;
+                    const bar = document.getElementById('g3-bar');
+                    if(bar) bar.style.left = window.g3Pos + '%';
+                }, 40);
+            } 
+            else { // Diğer Tüm Protokoller İçin Süratli Terminal Hack Modülü
+                document.getElementById('game-instructions').innerText = "Hormonal sistemi senkronize etmek için aşağıdaki siber güvenlik düğmesini aktif et.";
+                canvas.innerHTML = `
+                    <button onclick="playGenericGame()" class="w-24 h-24 rounded-full border-2 border-dashed border-emerald-500/30 flex items-center justify-center bg-emerald-500/5 hover:bg-emerald-500/10 transition-all text-sm animate-[spin_20s_linear_infinite]">
+                        <span class="animate-[spin_20s_linear_infinite] reverse text-lg">${p.icon}</span>
+                    </button>
+                `;
             }
-            renderProtocols();
         }
 
-        function resetAll() {
-            activeProtocols = [];
+        // ADIM 1 OYUN MANTIĞI
+        function playGame1(type) {
+            if(type === 'marker') {
+                document.getElementById('game1-btn1').className = "p-2 bg-emerald-500/20 border border-emerald-500 text-emerald-400 rounded-xl font-bold";
+                window.g1m = true;
+            }
+            if(type === 'target') {
+                document.getElementById('game1-btn2').className = "p-2 bg-emerald-500/20 border border-emerald-500 text-emerald-400 rounded-xl font-bold";
+                window.g1t = true;
+            }
+            if(window.g1m && window.g1t) {
+                unlockModalAction(currentGameId);
+            }
+        }
+
+        // ADIM 2 OYUN MANTIĞI
+        function playGame2(choice) {
+            if(window.game2Sequence.includes(choice)) return;
+            window.game2Sequence.push(choice);
+            
+            if(choice === 'lif') document.getElementById('g2-l').className = "flex-1 p-2.5 bg-emerald-500/20 border border-emerald-500 text-emerald-400 rounded-xl font-bold";
+            if(choice === 'pro') document.getElementById('g2-p').className = "flex-1 p-2.5 bg-amber-500/20 border border-amber-500 text-amber-400 rounded-xl font-bold";
+            if(choice === 'kar') document.getElementById('g2-k').className = "flex-1 p-2.5 bg-pink-500/20 border border-pink-500 text-pink-400 rounded-xl font-bold";
+
+            const status = document.getElementById('g2-status');
+            status.innerText = `Sıralama: ${window.game2Sequence.join(' -> ')}`;
+
+            if(window.game2Sequence.length === 3) {
+                if(window.game2Sequence[0] === 'lif' && window.game2Sequence[1] === 'pro' && window.game2Sequence[2] === 'kar') {
+                    status.innerText = "Kusursuz Dizilim! İnsülin Dengelendi.";
+                    status.className = "text-center text-emerald-400 text-[9px] uppercase mono mt-2 font-bold";
+                    unlockModalAction(currentGameId);
+                } else {
+                    status.innerText = "Hatalı Sıralama! Grafik Pik Yaptı. Tekrar Deneyin.";
+                    status.className = "text-center text-red-400 text-[9px] uppercase mono mt-2 font-bold";
+                    setTimeout(() => {
+                        openGame(2);
+                    }, 1200);
+                }
+            }
+        }
+
+        // ADIM 3 OYUN MANTIĞI
+        function playGame3() {
+            clearInterval(window.g3Interval);
+            if(window.g3Pos >= 35 && window.g3Pos <= 60) {
+                document.getElementById('game-canvas').innerHTML = "<div class='text-emerald-400 text-xs font-bold uppercase mono tracking-widest'>Reseptör Kilidi Açıldı! Sinyal Aktif.</div>";
+                unlockModalAction(currentGameId);
+            } else {
+                document.getElementById('game-canvas').innerHTML = "<div class='text-red-400 text-xs font-bold uppercase mono tracking-widest'>Bağlantı Başarısız. Tekrar Deneniyor...</div>";
+                setTimeout(() => { openGame(3); }, 1200);
+            }
+        }
+
+        // GENERİC OYUN MANTIĞI
+        function playGenericGame() {
+            document.getElementById('game-canvas').innerHTML = "<div class='text-emerald-400 text-xs font-bold uppercase mono tracking-widest animate-pulse'>Biyolojik Kod Enjekte Edildi.</div>";
+            unlockModalAction(currentGameId);
+        }
+
+        function unlockModalAction(id) {
+            const btn = document.getElementById('game-action-btn');
+            btn.className = "w-full py-4 bg-emerald-500 text-black font-black rounded-2xl hover:scale-[1.01] active:scale-[0.99] transition-all uppercase tracking-widest text-xs cursor-pointer shadow-[0_0_20px_rgba(16,185,129,0.3)]";
+            btn.innerText = "Sinyal Hattını Güncelle";
+            btn.onclick = () => finishGame(id);
+        }
+
+        function finishGame(id) {
+            if(!activeProtocols.includes(id)) {
+                activeProtocols.push(id);
+            }
+            document.getElementById('game-modal').classList.add('hidden');
+            clearInterval(window.g3Interval);
+            
+            // HPO Aksı Sinyal Akışı Simülasyonu
+            animateSignalFlow();
             renderProtocols();
+
+            if(activeProtocols.length === 10) {
+                setTimeout(triggerGlobalCelebration, 1200);
+            }
+        }
+
+        function animateSignalFlow() {
+            const particle = document.getElementById('flow-particle');
+            let pos = 0;
+            clearInterval(pParticleInterval);
+            pParticleInterval = setInterval(() => {
+                pos += 4;
+                if(pos >= 100) {
+                    clearInterval(pParticleInterval);
+                    particle.style.top = "0%";
+                    particle.style.opacity = "0";
+                } else {
+                    particle.style.opacity = "1";
+                    particle.style.top = pos + "%";
+                }
+            }, 16);
         }
 
         function updateTelemetry() {
-            const progress = Math.round((activeProtocols.length / PROTOCOLS.length) * 100);
+            const score = Math.round((activeProtocols.length / 10) * 100);
+            document.getElementById('score-text').innerText = `${score}%`;
+            document.getElementById('score-bar').style.width = `${score}%`;
             
-            document.getElementById('score-text').innerText = `%${progress}`;
-            document.getElementById('score-bar').style.width = `${progress}%`;
-
-            const sLine = document.getElementById('signal-line');
-            const sDot = document.getElementById('signal-dot');
-            const nPituitary = document.getElementById('node-pituitary');
-            const nOvary = document.getElementById('node-ovary');
+            const badge = document.getElementById('rank-badge');
+            const desc = document.getElementById('status-desc');
+            const brain = document.getElementById('node-brain');
+            const ovary = document.getElementById('node-ovary');
             const tLh = document.getElementById('text-lh');
             const tFollicle = document.getElementById('text-follicle');
-            const sTitle = document.getElementById('status-title');
-            const sDesc = document.getElementById('status-desc');
-            const sText = document.getElementById('score-text');
-            const sBar = document.getElementById('score-bar');
+            const fLine = document.getElementById('flow-line');
 
-            // Reset classes
-            sLine.className = "w-0.5 h-full transition-all duration-700 ";
-            sDot.className = "w-2 h-2 rounded-full absolute transition-all duration-500 ";
-            nPituitary.className = "p-3 rounded-xl border text-center w-48 transition-all duration-500 ";
-            nOvary.className = "p-3 rounded-xl border text-center w-48 transition-all duration-500 ";
-            sTitle.className = "text-xs font-bold tracking-wide ";
-            sText.className = "text-lg font-bold tracking-tight ";
-            sBar.className = "h-full rounded-full transition-all duration-500 ";
-
-            if (progress < 40) {
-                sLine.classList.add('bg-red-500', 'animate-pulse');
-                sDot.classList.add('bg-red-400', 'animate-bounce');
-                nPituitary.classList.add('bg-slate-950', 'border-slate-800');
-                nOvary.classList.add('bg-slate-950', 'border-slate-800');
-                tLh.innerText = "LH Frekansı: Kritik/Yüksek";
-                tFollicle.innerText = "Folikül Durumu: Gelişimi Yarım";
-                sTitle.innerText = "KRİTİK DEŞARJ (ANDROJEN DOMİNANSI)";
-                sTitle.classList.add('text-red-400');
-                sText.classList.add('text-red-400');
-                sBar.classList.add('bg-red-500');
-                sDesc.innerText = "Yüksek LH pulsite frekansı ve over üzerinde matürasyon blokajı aktif.";
-            } else if (progress < 80) {
-                sLine.classList.add('bg-amber-500');
-                sDot.classList.add('bg-amber-400', 'animate-pulse');
-                nPituitary.classList.add('bg-slate-950', 'border-amber-900/50');
-                nOvary.classList.add('bg-slate-950', 'border-amber-900/50');
-                tLh.innerText = "LH Frekansı: Modüle Ediliyor";
-                tFollicle.innerText = "Folikül Durumu: Sinyal Bekleniyor";
-                sTitle.innerText = "SİNYAL MODÜLASYONU DEVREDE";
-                sTitle.classList.add('text-amber-400');
-                sText.classList.add('text-amber-400');
-                sBar.classList.add('bg-amber-500');
-                sDesc.innerText = "İnsülin hassasiyeti artıyor, periferik androjen üretimi stabilizasyon fazında.";
+            if(score < 40) {
+                badge.innerText = "Kritik Faz";
+                badge.className = "px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-xl text-[10px] font-bold text-red-400 uppercase mono";
+                desc.innerText = "Androjen dominansı kritik seviyede. LH sinyal bombardımanı folikül gelişimini engelliyor.";
+                fLine.className = "w-[2px] h-[150px] bg-gradient-to-b from-red-500 to-pink-500 relative";
+            } else if (score < 80) {
+                badge.innerText = "Stabilizasyon";
+                badge.className = "px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[10px] font-bold text-amber-400 uppercase mono";
+                desc.innerText = "Glukoz kontrolü ve hücre içi sinyaller aktif. Over üzerindeki metabolik baskı azalıyor.";
+                brain.className = "relative z-10 w-44 p-3 rounded-2xl bg-[#090d16] border border-amber-500/40 text-center shadow-xl transition-all duration-500";
+                tLh.innerText = "LH: MODÜLE EDİLİYOR";
+                tLh.className = "text-[9px] mt-0.5 text-amber-400 font-bold mono";
+                fLine.className = "w-[2px] h-[150px] bg-amber-500 relative";
             } else {
-                sLine.classList.add('bg-emerald-500', 'shadow-[0_0_10px_rgba(16,185,129,0.5)]');
-                sDot.classList.add('bg-emerald-400', 'animate-ping');
-                nPituitary.classList.add('bg-emerald-950/20', 'border-emerald-500/40', 'text-emerald-400');
-                nOvary.classList.add('bg-emerald-950/20', 'border-emerald-500/40', 'text-emerald-400');
-                tLh.innerText = "LH Frekansı: Normal / Senkronize";
-                tFollicle.innerText = "Folikül Durumu: Matürasyon Aktif";
-                sTitle.innerText = "HOMEOSTAZ (SAĞLIKLI DÖNGÜ)";
-                sTitle.classList.add('text-emerald-400');
-                sText.classList.add('text-emerald-400');
-                sBar.classList.add('bg-emerald-500');
-                sDesc.innerText = "HPO aksı senkronize. Hipofizer sinyal akışı ve ovülasyon mekanizması tamamen optimize.";
+                badge.innerText = "Homeostaz";
+                badge.className = "px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-[10px] font-bold text-emerald-400 uppercase mono";
+                desc.innerText = "Kusursuz denge sağlandı! HPO aksı senkronize çalışıyor, sağlıklı ovülasyon döngüsü tetiklendi.";
+                brain.className = "relative z-10 w-44 p-3 rounded-2xl bg-emerald-950/20 border border-emerald-500/40 text-center shadow-xl transition-all duration-500 text-emerald-400";
+                ovary.className = "relative z-10 w-44 p-3 rounded-2xl bg-emerald-950/20 border border-emerald-500/40 text-center shadow-xl transition-all duration-500 text-emerald-400 float-anim";
+                tLh.innerText = "LH: TAM SENKRONİZE";
+                tLh.className = "text-[9px] mt-0.5 text-emerald-400 font-bold mono";
+                tFollicle.innerText = "MATÜRASYON AKTİF";
+                tFollicle.className = "text-[9px] mt-0.5 text-emerald-400 font-bold mono";
+                fLine.className = "w-[2px] h-[150px] bg-emerald-400 shadow-[0_0_15px_#10b981] relative";
             }
         }
 
-        // İlk başlatma
+        function triggerGlobalCelebration() {
+            confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 }, colors: ['#10b981', '#ec4899', '#ffffff'] });
+            document.getElementById('share-card').classList.remove('hidden');
+        }
+
+        function copyAndCloseShare() {
+            const text = document.getElementById('blueprint-text').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Story şablonu kopyalandı! Paneli kapatabilirsiniz.");
+                document.getElementById('share-card').classList.add('hidden');
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('game-modal').classList.add('hidden');
+            clearInterval(window.g3Interval);
+        }
+
+        function resetSystem() {
+            if(confirm("Tüm biyolojik matris verileri sıfırlanacak. Emin misin?")) {
+                activeProtocols = [];
+                localStorage.removeItem('diva_matrix_save_data');
+                renderProtocols();
+            }
+        }
+
+        // Başlatıcı
         renderProtocols();
     </script>
 </body>
